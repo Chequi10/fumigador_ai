@@ -1,0 +1,65 @@
+import serial
+import threading
+
+def conectar_puerto(puerto="/dev/ttyUSB0", baudrate=9600, timeout=1):
+    """Establece conexión con el GPS y devuelve el objeto serial."""
+    try:
+        ser = serial.Serial(puerto, baudrate, timeout=timeout)
+        print(f"Conectado al GPS en {puerto} a {baudrate} baudios")
+        return ser
+    except serial.SerialException as e:
+        print(f"Error al abrir el puerto serie: {e}")
+        return None
+
+def convertir_grados_nmea(valor, direccion):
+    """Convierte coordenadas NMEA a grados decimales"""
+    if not valor:
+        return None
+    grados = int(valor[:2])
+    minutos = float(valor[2:]) / 60
+    resultado = grados + minutos
+    if direccion in ['S', 'W']:
+        resultado *= -1
+    return resultado
+
+def leer_y_parsear(ser):
+    """Lee y procesa los datos del GPS"""
+    try:
+        while True:
+            linea = ser.readline().decode(errors='ignore').strip()
+            if linea.startswith("$GPRMC"):
+                datos = linea.split(",")
+
+                latitud = convertir_grados_nmea(datos[3], datos[4])
+                longitud = convertir_grados_nmea(datos[5], datos[6])
+                velocidad_nudos = float(datos[7]) if datos[7] else 0
+                velocidad_kmh = velocidad_nudos * 1.852
+
+                print(f"Latitud: {latitud}, Longitud: {longitud}, Velocidad: {velocidad_kmh:.2f} km/h")
+
+    except Exception as e:
+        print(f"Error al leer datos: {e}")
+    finally:
+        ser.close()
+        print("Conexión GPS cerrada.")
+
+def tarea_gps():
+    """Función que se ejecuta en un hilo para leer el GPS."""
+    puerto_gps = "/dev/ttyUSB0"  # Ajustar según corresponda
+    gps_serial = conectar_puerto(puerto_gps)
+
+    if gps_serial:
+        leer_y_parsear(gps_serial)
+
+# 🔹 Bloque main con hilos
+if __name__ == "__main__":
+    hilo_gps = threading.Thread(target=tarea_gps, daemon=True)
+    hilo_gps.start()
+
+    while True:
+        try:
+            print("Ejecutando otras tareas en el hilo principal...")
+            # Aquí puedes poner otras tareas del programa
+        except KeyboardInterrupt:
+            print("\nPrograma terminado.")
+            break

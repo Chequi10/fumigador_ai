@@ -1,0 +1,17 @@
+[Unit]
+Description=Servidor TCP para aplicación agrícola
+After=network.target
+
+[Service]
+Environment = "API_KEY=AIzaSyAfvCvQYCVdNg3-RlbZNcvLoMCcv92xaP4"
+ExecStart=/usr/bin/python3 -u /root/servidor_tcp.py
+WorkingDirectory=/root
+User=root
+Restart=always     
+RestartSec=5s
+      
+
+[Install]
+WantedBy=multi-user.target
+
+

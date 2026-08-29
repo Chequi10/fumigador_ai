@@ -256,3 +256,13 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+# Archivos locales del proyecto
+*.whl
+*.whl.*
+*.mp4
+*.avi
+*mov
+libgpiod/
+vision/
+__pycache__/
+*.pyc

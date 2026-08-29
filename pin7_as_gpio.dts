@@ -1,0 +1,19 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "nvidia,jetson-nano";
+
+    fragment@0 {
+        target = <&gpio>;
+        __overlay__ {
+            pin7_gpio: pinmux@0 {
+                nvidia,pins = "gpio216";
+                nvidia,function = "gpio";
+                nvidia,pull = <0>;          // Sin pull-up/down
+                nvidia,tristate = <0>;      // Salida activa
+                nvidia,enable-input = <1>;  // Permite lectura
+            };
+        };
+    };
+};
