@@ -266,3 +266,4 @@ libgpiod/
 vision/
 __pycache__/
 *.pyc
+token fumigador
